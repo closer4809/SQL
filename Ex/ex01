@@ -1,0 +1,126 @@
+SELECT
+        first_name || '-'|| last_name as 성명,
+        salary as 급여,
+        salary*12 as 연봉,
+        salary*12+5000 as 연봉2,
+        phone_number as 전화번호
+FROM employees;
+
+/*where절*/
+--비교연산자
+SELECT first_name
+from employees
+where department_id = 10;
+
+--예제
+select 
+        first_name,
+        salary
+from employees
+where salary >=15000;
+
+select
+    first_name,
+    hire_date
+FROM employees
+where hire_date >= '07/01/01';
+
+SELECT
+    salary
+FROM employees
+where first_name = 'Lex';
+
+--예제)
+SELECT 
+        first_name,
+        salary
+from    employees
+where salary >= 14000 
+or salary>= 17000;
+
+select 
+        first_name, 
+        hire_date
+from employees
+where hire_date >= '04/01/01'
+and hire_date<= '05/12/31';
+
+--비트윈 연산자로 특정구간 값 출력하기
+SELECT 
+        first_name,
+        salary
+from    employees
+where salary >= 14000 
+or salary>= 17000;
+
+SELECT 
+        first_name,
+        salary
+from    employees
+where salary between 14000 and 17000;
+
+--in 연산자로 여러 조건 검사하기
+
+SELECT
+        first_name,
+        last_name,
+        salary
+FROM employees
+where first_name in ('Neena', 'Lex', 'John');
+
+select first_name, last_name, salary
+FROM employees
+where first_name = 'Neena'
+or first_name = 'Lex'
+or first_name = 'John';
+
+--예제
+
+SELECT
+    first_name,
+    salary
+FROM employees
+where salary = 2100
+or salary = 3100
+or salary = 4100
+or salary = 5100;
+
+
+SELECT
+    first_name,
+    salary
+FROM employees
+where salary in (2100, 3100, 4100, 5100);
+
+--Like 연산자로 비슷한것들 모두 찾기
+SELECT
+    first_name,
+    last_name,
+    salary
+FROM employees
+where first_name like 'L%';
+
+
+--예
+select
+    first_name,
+    salary
+from employees
+where first_name like '%am%';
+
+select 
+    first_name,
+    salary
+from employees
+where first_name like '_a%';
+
+select 
+    first_name
+from employees
+where first_name like '___a%';
+
+select 
+    first_name
+from employees
+where first_name like '__a_';
+
