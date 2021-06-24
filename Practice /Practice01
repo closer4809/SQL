@@ -1,0 +1,85 @@
+SELECT
+    first_name as "이름",
+    salary as "월급",
+    phone_number as "전화번호",
+    hire_date   as "입사일"
+FROM employees
+order by hire_date asc;
+
+SELECT
+    first_name as "이름",
+    salary as "월급",
+    phone_number as "전화번호",
+    hire_date as "입사일"
+FROM employees
+ORDER BY hire_date asc;
+
+select
+    job_title as "업무이름",
+    max_salary as "최고월급"
+from jobs 
+order by  max_salary desc;
+
+select
+    first_name,
+    manager_id,
+    commission_pct,
+    salary
+from employees
+where manager_id is not null
+and commission_pct is null
+and salary > 3000;
+
+SELECT
+    job_title,
+    max_salary
+FROM jobs
+where max_salary >= 10000
+ORDER BY max_salary desc;
+
+SELECT
+    first_name,
+    salary,
+    NVL(commission_pct,0)
+FROM employees
+where salary  BETWEEN 10000 AND 14000
+order by salary asc;
+
+SELECT
+    first_name,
+    salary,
+    replace(hire_date, SUBSTR(hire_date,1,8), '1977-12'),
+    department_id
+FROM employees
+where department_id = 10 or
+department_id = 90 or
+department_id = 100;
+
+SELECT 
+    first_name,
+    salary
+FROM employees
+where first_name like 'L%'
+or first_name like '%L'
+or first_name like '%L%'
+or first_name like 'l%'
+or first_name like '%l'
+or first_name like '%l%';
+
+select
+    department_name
+from departments
+order by length(department_name) desc;
+
+SELECT
+    country_name
+from countries
+order by country_name asc;
+
+SELECT
+    first_name,
+    salary,
+    replace(phone_number, '.', '-'),
+    hire_date
+FROM employees
+where hire_date < '03/12/31';
