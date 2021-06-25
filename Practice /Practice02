@@ -56,9 +56,11 @@ select
     max(salary),
     min(salary)
 from employees
-GROUP BY manager_id
-having avg(salary)>5000
+where hire_date >= '2005.01.01'
+GROUP BY manager_id 
+having avg(salary)>= 5000
 order by avg(salary) desc;
+
 
 select  
     first_name,
