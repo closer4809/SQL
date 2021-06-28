@@ -1,0 +1,159 @@
+--단일행함수
+select first_name,
+       round(salary, -4)
+from employees;
+
+
+--그룹함수  --> 오류발생(반드시 이유를 확인할것!!!)
+select avg(salary),  --이름은 여러개가 나오지만
+     --first_name  --avg는 모든 월급의 평균이기때문에 실행이 불가능하다.
+from employees;     --출력되는 양쪽의 개수가 맞아야한다.
+
+
+--그룹함수 avg()
+select avg(salary)
+from employees;
+
+
+--그룹함수 count()
+select count(*),              --null을 포함한 count
+       count(first_name),     --컬럼명 사용시 0은 갯수에 포함된다!
+       count(commission_pct)  --Null을 제외한 실제가지고있는 값의 갯수출력
+from employees;
+
+--조건절 추가
+select count(*), salary
+from employees
+where salary >16000;
+
+--그룹함수 sum()
+select count(*),    -- 전체갯수 107
+        count(commission_pct), --  커미션 값이 있는 직원 35
+        sum(commission_pct),    -- 전체합계    
+        
+        avg(commission_pct),    -- null은 포함하지 않는다. 
+        sum(commission_pct)/count(commission_pct), --null제외
+
+        avg(nvl(commission_pct,0)),  --null을 0으로 변경해서 평균에 계산된다.
+        sum(commission_pct)/count(*)    -- null 포함.
+
+from employees;
+
+
+select sum(salary)
+from employees;
+
+-- 그룹함수 avg() null일때 0으로 변환해서 사용
+select count(*), 
+        sum(salary),
+        avg(salary),
+        sum(salary)/count(*)
+from employees;        
+
+--그룹함수 max() min()
+select max(salalry), min(salary)
+from employees;
+
+
+select first_name, salary
+from employees
+order by salary desc;
+
+select first_name, MAX(salary)
+from employees; -- 오류 --> 이렇게 표현하는 방법은??
+
+/*group by 절*/
+--전체 부서, 급여 출력
+SELECT department_id, salary
+FROM employees
+order by department_id asc;
+
+--부서번호, 부서별 평균
+SELECT department_id, avg(salary)
+FROM employees
+group by department_id ;
+
+--group by 절 사용시 주의
+
+SELECT department_id, count(*), sum(salary)
+FROM employees
+group by department_id;
+
+--안되는 경우
+SELECT department_id, job_id, count(*),sum(salary)
+FROM employees
+group by department_id;
+
+--그룹을 더 세분화
+select department_id, job_id, avg(salary)
+from employees
+group by department_id, job_id;
+
+select*
+from employees;
+
+--예제
+SELECT
+    department_id,
+    count(*),
+    SUM(salary)
+FROM employees
+group by department_id;
+
+
+--그룹함수는 where절에 사용할 수 없다
+--안되는 예제
+SELECT
+    department_id,
+    count(*),
+    SUM(salary)
+FROM employees
+where sum(salary)>=20000
+group by department_id;
+
+--되는 예제
+SELECt 
+    department_id, 
+    count(*), 
+    sum(salary)
+FROM employees
+group by department_id
+having sum(salary) >= 20000
+and department_id = 80;
+
+/*
+select 문 
+    select 절
+    from 절
+    where 절
+    group by 절
+    having 절
+    order by 절 
+*/
+
+--case ~and 문
+select  employee_id, 
+    job_id,
+    salary, 
+    case
+        when job_id='AC_ACCOINT' then salary+salary*0.1
+        when job_id='SA_REF' then salary+salary*0.2
+        when job_id='ST_CLERK' then salary+salary*0.3
+        else salary
+    end as rSalary    
+from employees;
+
+
+--decode()
+select employee_id, 
+    job_id,
+    salary,
+    decode(
+    job_id, 'AC_ACCOINT', salary+salary*0.1,
+            'SA_REF', salary+salary*0.2,
+            'ST_CLERK', salary+salary*0.3,
+    salary        
+    ) as rSalary
+    
+    
+from employees;
