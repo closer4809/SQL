@@ -1,0 +1,102 @@
+select
+    em.employee_id,
+    em.first_name,
+    em.salary,
+    em.department_id,
+    jo.job_title,
+    jo.job_id
+from employees em, jobs jo
+where em.job_id = jo.job_id
+order by em.employee_id asc;
+
+select
+    em.employee_id,
+    em.first_name,
+    em.salary,
+    em.department_id,
+    jo.job_title,
+    jo.job_id
+from employees em, jobs jo 
+where em.job_id = jo.job_id 
+order by em.employee_id asc;
+
+SELECT
+    lo.location_id,
+    lo.city,
+    de.department_name,
+    de.department_id
+FROM locations lo, departments de
+where lo.location_id = de.location_id
+order by de.location_id asc;
+
+SELECT
+    lo.location_id,
+    lo.city,
+    de.department_name,
+    de.department_id
+FROM locations lo left outer join departments de
+on lo.location_id = de.location_id
+order by de.location_id asc;
+
+
+
+SELECT
+    re.region_name,
+    co.country_name
+FROM regions re, countries co
+where co.region_id = re.region_id
+ORDER BY re.region_name asc,
+co.country_name desc;
+
+SELECT
+    em.employee_id,
+    em.first_name,
+    em.hire_date,
+    de.first_name,
+    de.hire_date
+FROM employees em ,employees de
+where em.employee_id = de.manager_id
+and em.hire_date > de.hire_date;
+
+SELECT
+    co.country_name,
+    co.region_id,
+    lo.city,
+    de.department_name,
+    de.department_id
+FROM departments de, locations lo, countries co
+where lo.location_id = de.location_id
+and lo.country_id = co.country_id
+order by co.country_name asc;
+
+SELECT
+    em.employee_id,
+    em.first_name ||' '|| em.last_name as fullname,
+    em.job_id,
+    joh.start_date,
+    joh.end_date
+FROM employees em, job_history joh
+where em.employee_id = joh.employee_id
+and joh.job_id = 'AC_ACCOUNT';
+
+SELECT
+    de.department_id,
+    de.department_name,
+    em.first_name,
+    lo.city,
+    co.country_name,
+    re.region_name
+FROM  employees em, departments de,locations lo, countries co, regions re
+where em.employee_id = de.manager_id
+and lo.location_id = de.location_id
+and lo.country_id = co.country_id
+and re.region_id = co.region_id;
+
+SELECT
+    em.employee_id,
+    mm.first_name,
+    de.department_name,
+    em.first_name
+FROM employees em, employees mm, departments de
+where em.employee_id = mm.manager_id
+and em.department_id = de.department_id;
