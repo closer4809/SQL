@@ -1,0 +1,117 @@
+--1
+SELECT
+    count(salary)
+FROM employees
+where salary <(select AVG(salary)
+                    from employees);
+
+--2 평균급여, 최대급여??                   
+SELECT
+    employee_id,
+    first_name,
+    salary
+FROM employees
+where salary >=(select AVG(salary)
+                    from employees)
+and salary <=(SELECT max(salary) 
+FROM employees)
+order by salary asc;                    
+
+--3 -- 두명 나옴
+SELECT
+    em.first_name,
+    em.last_name,
+    de.location_id,
+    lo.street_address,
+    lo.postal_code,
+    lo.city,
+    lo.state_province,
+    lo.country_id
+FROM (SELECt first_name, last_name 
+    FROM employees
+    where first_name = 'Steven'
+    and last_name = 'King')sk, employees em, departments de, locations lo
+where sk.first_name = em.first_name
+and sk.last_name = em.last_name
+and em.department_id = de.department_id
+and de.location_id = lo.location_id
+;
+
+--4 
+SELECT
+    employee_id,
+    first_name,
+    salary
+FROM employees
+where salary <any(select salary
+from employees
+where job_id = 'ST_MAN')
+order by salary desc; 
+
+/* 5 조건절 비교,각 부서별로 최고의 급여를 받는 사원의 직원번호(employee_id), 이름(first_name)과 급여(salary) 부서번호(department_id)를 조회하세요 
+단 조회결과는 급여의 내림차순으로 정렬되어 나타나야 합니다. 
+조건절비교, 테이블조인 2가지 방법으로 작성하세요*/
+
+--조건질비교
+SELECT
+    first_name,
+    salary,
+    department_id
+FROM employees 
+where (department_id, salary) in(select department_id, max(salary)
+                                from employees
+                                GROUP by department_id);
+
+--테이블조인
+select e.department_id, e.employee_id, e.first_name, e.salary
+from employees e, (select department_id, max(salary) salary
+from employees
+group by department_id) s
+where e.department_id = s.department_id
+and e.salary = s.salary;
+
+--6
+select jo.job_title,
+        sum(em.salary)
+from jobs jo, employees em
+where em.job_id = jo.job_id
+group by jo.job_title
+order by sum(em.salary) desc;
+
+--7
+select
+    em.employee_id,
+    em.first_name,
+    em.salary
+from employees em , (select avg(salary) asa,
+                            department_id
+                    from employees
+                    group by department_id) saa
+
+where em.department_id = saa.department_id
+and em.salary > saa.asa;
+                
+--8                
+SELECT
+    rn,
+    sb.employee_id,
+    sb.first_name,
+    sb.hire_date
+FROM (
+        SELECT
+            rownum rn,
+            sa.employee_id,
+            sa.first_name,
+            sa.salary,
+            sa.hire_date
+        FROM
+            (SELECT
+                employee_id,
+                first_name,
+                salary,
+                hire_date
+            FROM employees
+            order by hire_date asc)sa)sb
+where rn>=11
+and  rn<=15;
+
