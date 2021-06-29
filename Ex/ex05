@@ -1,0 +1,302 @@
+/*subQuery*/
+
+--den의 급여 11000
+select
+    salary
+from employees
+where first_name = 'Den';
+
+--11000(dean)보다 많은 사람은?
+SELECT
+    first_name,
+    salary
+FROM employees
+where salary>(11000);
+
+SELECT
+    first_name,
+    salary
+FROM employees
+where salary>   (select
+                    salary
+                from employees
+                where first_name = 'Den'
+                );
+                
+--예제) 급여를 가장 적게 받는 사람의 이름, 급여, 사원번호는?
+
+--1. 급여를 가장 적게 받는 사람의 급여 --> 21000
+select 
+    
+    min(salary)
+from employees; -- 급여를 가장 적게받는 급여의 금액을 찾음(2100)
+
+--2. 2100을 받는 사람의 이름 급여 사원번호
+SELECT
+    first_name,
+    salary,
+    employee_id
+FROM employees
+where salary = 2100; -- 2100이라는걸 알았으니 2100의 급여를 받는 사람을 찾음
+
+--3. 2식을 조합
+--위 처럼 두번 식을 만들어야되어서 불편함. 그래서 두개의 식을 쿼리로? 조합해서 한번에 표현
+SELECT
+    first_name,
+    salary,
+    employee_id
+FROM employees
+where salary = (select min(salary)
+                from employees);
+                
+--예제) 평균급여보다 적게받는 사람의 이름, 급여를 출력하세요?
+--1. 평균급여를 구한다
+SELECT
+    avg(salary)
+FROM employees;
+
+--2. 6461.83보다 적게 받는 사람의 이름 급여를 구한다
+select 
+    first_name,
+    salary
+from employees
+where salary<6461.83;
+
+--3. 식을 조합한다
+SELECT 
+    first_name,
+    salary
+FROM employees 
+where salary< ( SELECT
+                    avg(salary)
+                FROM employees);
+
+/*다중행 subQuery*/
+--1. 부서번호 110인 직원의 급여 리스트를 구한다. shelley 12008, william 8300
+SELECT
+    *
+FROM employees
+where department_id = 110;
+
+--2. 급여가 12008, 8300인 직원리스트틀 구한다.
+SELECT
+    first_name,
+    salary
+FROM employees 
+where salary = 12008
+or salary =8300;
+
+SELECT
+    first_name,
+    salary
+FROM employees 
+where salary in (12008, 8300);
+
+--3. 두식을 조합한다
+SELECT
+    first_name,
+    salary
+FROM employees 
+where salary in (
+                SELECT
+                    *
+                FROM employees
+                where department_id = 110);
+                
+--예제) 각 부서별로 최고급여를 받는 사원을 출력하세여
+
+-- 1. 그룹별 최고급여를 구한다.
+SELECT
+    department_id,
+    max(salary)
+FROM employees
+group by department_id;
+
+--2, 사원테이블에서 그룹번호와 급여가 같은 직원의 정보를 구한다.
+SELECT
+    department_id,
+    employee_id,
+    first_name,
+    salary
+FROM employees
+where (department_id, salary) in (
+                                SELECT
+                                    department_id,
+                                    max(salary)
+                                FROM employees
+                                group by department_id);
+
+--예제)부서번호가 110인 직원의 급여 보다 큰 
+--   모든 직원의 사번, 이름 급여를 출력하세요.(or연산->8300보다 큰)
+
+--1. 부서번호가 110인 직원 리스트 12008, 8300
+SELECT
+    *
+FROM employees
+where department_id = 110;
+
+--2. 부서번호가 110인 직원급여(12008, 8300) 보다 급여가 큰 직원리스트(사번, 이름, 급여)를 구하시오
+SELECT
+    employee_id,
+    FIRST_name,
+    salary
+FROM employees
+where salary > 12008 
+or salary > 8300;
+
+SELECT
+    employee_id,
+    FIRST_name,
+    salary
+FROM employees
+where salary >any (
+                    SELECT
+                        salary
+                    FROM employees
+                    where department_id = 110
+                    );
+
+--예제
+--각 부서별로 최고급여를 받는 사원을 출력하세요
+--1, 각부서별로 최고 급여 리스트 구하기
+Select 
+    department_id,
+    max(salary)
+from employees
+group by department_id;
+
+--2. 직원테이블 부서코드, 급여가 동시에 같은 직원 리스트 출력하기
+SELECT
+    first_name,
+    department_id,
+    salary
+FROM employees
+where (department_id, salary) in (
+                                Select 
+                                    nvl(department_id, 0),
+                                    max(salary)
+                                from employees
+                                group by department_id);
+
+
+
+--예제(join)
+--각 부서별로 최고급여를 받는 사원을 출력하세요
+--1. 각부서별 최고급여 테이블 s
+SELECT
+    department_id,
+    max(salary)
+    
+FROM employees
+group by department_id;
+
+--2. 직원 테이블과 조인한다 e
+    --e. 부서번호 = s.부서번호    e.급여 = s.급여(최고급여)
+SELECT
+    e.department_id,
+    e.first_name,
+    e.department_id,
+    e.salary,
+    s.department_id, -- 추가된 컬
+    s.msalary
+FROM employees e, (SELECT
+                        department_id,
+                        max(salary) mSalary   
+                    FROM employees
+                    group by department_id
+                    ) s
+where e.department_id = s.department_id
+and e.salary = s.mSalary;
+
+/*************
+rownum
+*************/
+
+--예)급여를 가장 많이 받는 5명의 직원의 이름을 출력하시오.
+--정령를 하면 rownum이 섞인다.  (x) --> 정렬을 하고 rownum을 한다
+
+select 
+    rownum,
+    employee_id,
+    first_name,
+    salary
+from employees
+where rownum >= 1
+and rownum <= 5
+order by salary desc;
+
+----> 정렬을 하고 rownum 한다
+select 
+    ROWNUM,
+    ot.employee_id,
+    ot.first_name,
+    ot.salary,
+    ot.hire_date 
+from (select employee_id,
+             first_name,
+             salary,
+             hire_date 
+     from employees
+     order by salary desc) ot --> 정렬되 있는 테이블이면??
+where rownum >=1
+and  rownum <=5;
+
+--> 정렬을 하고 , rownum하고 where절을 한다
+
+SELECT
+    ort.rn,
+    ort.employee_id,    
+    ort.first_name,
+    ort.salary
+FROM (select 
+        rownum rn,
+        ot.employee_id,
+        ot.first_name,
+        ot.salary
+      from  (
+            select 
+                employee_id,
+                first_name,
+                salary
+            from employees
+            order by salary desc)ot)ort
+where rn >=3
+and rn <=5;
+
+
+select 
+    employee_id,
+    first_name,
+    salary
+from employees
+order by salary desc;
+
+--예제) 07년에 입사한 직원중 급여가 많은 직원중 3에서 7등의 이름 급여 입사일은?
+
+select 
+    oot.rm,
+    oot.first_name,
+    oot.salary,
+    oot.hire_date
+from (select
+        rownum rm,
+        ot.first_name,
+        ot.salary,
+        ot.hire_date
+    from (select 
+            first_name,
+            salary,
+            hire_date
+        from employees
+        where hire_date >= '07/01/01'
+        and hire_date <= '07/12/31'
+        ORDER BY salary desc
+        )ot)oot
+where oot.rm >=3
+and oot.rm <=7;
+
+
+
+
+
+
